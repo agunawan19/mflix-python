@@ -328,30 +328,11 @@ def delete_comment(comment_id, user_email):
     return response
 
 
-"""
-Ticket: User Management
-
-For this ticket, you will need to implement the following six methods:
-
-- get_user
-- add_user
-- login_user
-- logout_user
-- get_user_session
-- delete_user
-
-You can find these methods below this docstring. Make sure to read the comments
-to better understand the task.
-"""
-
-
 def get_user(email):
     """
     Given an email, returns a document from the `users` collection.
     """
-    # TODO: User Management
-    # Retrieve the user document corresponding with the user's email.
-    return db.users.find_one({ "some_field": "some_value" })
+    return db.users.find_one({ "email": email })
 
 
 def add_user(name, email, hashedpw):
@@ -368,14 +349,11 @@ def add_user(name, email, hashedpw):
     """
 
     try:
-        # TODO: User Management
-        # Insert a user with the "name", "email", and "password" fields.
         # TODO: Durable Writes
-        # Use a more durable Write Concern for this operation.
         db.users.insert_one({
-            "name": "mongo",
-            "email": "mongo@mongodb.com",
-            "password": "flibbertypazzle"
+            "name": name,
+            "email": email,
+            "password": hashedpw
         })
         return {"success": True}
     except DuplicateKeyError:
@@ -390,12 +368,9 @@ def login_user(email, jwt):
     In `sessions`, each user's email is stored in a field called "user_id".
     """
     try:
-        # TODO: User Management
-        # Use an UPSERT statement to update the "jwt" field in the document,
-        # matching the "user_id" field with the email passed to this function.
         db.sessions.update_one(
-            { "some_field": "some_value" },
-            { "$set": { "some_other_field": "some_other_value" } }
+            { "user_id": email },
+            { "$set": { "jwt": jwt }}, upsert=True
         )
         return {"success": True}
     except Exception as e:
@@ -410,9 +385,7 @@ def logout_user(email):
     In `sessions`, each user's email is stored in a field called "user_id".
     """
     try:
-        # TODO: User Management
-        # Delete the document in the `sessions` collection matching the email.
-        db.sessions.delete_one({ "some_field": "some_value" })
+        db.sessions.delete_one({ "user_id": email })
         return {"success": True}
     except Exception as e:
         return {"error": e}
@@ -425,9 +398,7 @@ def get_user_session(email):
     In `sessions`, each user's email is stored in a field called "user_id".
     """
     try:
-        # TODO: User Management
-        # Retrieve the session document corresponding with the user's email.
-        return db.sessions.find_one({ "some_field": "some_value" })
+        return db.sessions.find_one({ "user_id": email })
     except Exception as e:
         return {"error": e}
 
@@ -440,8 +411,8 @@ def delete_user(email):
     try:
         # TODO: User Management
         # Delete the corresponding documents from `users` and `sessions`.
-        db.sessions.delete_one({ "some_field": "some_value" })
-        db.users.delete_one({ "some_field": "some_value" })
+        db.sessions.delete_one({ "user_id": email })
+        db.users.delete_one({ "email": email })
         if get_user(email) is None:
             return {"success": True}
         else:
