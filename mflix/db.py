@@ -420,19 +420,9 @@ def update_prefs(email, prefs):
     """
     prefs = {} if prefs is None else prefs
     try:
-
-        """
-        Ticket: User Preferences
-
-        Update the "preferences" field in the corresponding user's document to
-        reflect the information in prefs.
-        """
-
-        # TODO: User preferences
-        # Use the data in "prefs" to update the user's preferences.
         response = db.users.update_one(
-            { "some_field": "some_value" },
-            { "$set": { "some_other_field": "some_other_value" } }
+            { "email": email },
+            { "$set": { "preferences": prefs } }
         )
         if response.matched_count == 0:
             return {'error': 'no user found'}
