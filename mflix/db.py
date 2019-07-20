@@ -63,18 +63,6 @@ def get_movies_by_country(countries):
     Returns a list of dictionaries, each dictionary contains a title and an _id.
     """
     try:
-
-        """
-        Ticket: Projection
-
-        Write a query that matches movies with the countries in the "countries"
-        list, but only returns the title and _id of each movie.
-
-
-        Remember that in MongoDB, the $in operator can be used with a list to
-        match one or more values of a specific field.
-        """
-
         query = {
             "countries": {
                 "$in": countries
@@ -192,17 +180,7 @@ def build_query_sort_project(filters):
         elif "cast" in filters:
             query = {"cast": {"$in": filters["cast"]}}
         elif "genres" in filters:
-
-            """
-            Ticket: Text and Subfield Search
-
-            Given a genre in the "filters" object, construct a query that
-            searches MongoDB for movies with that genre.
-            """
-
-            # TODO: Text and Subfield Search
-            # Construct a query that will search for the chosen genre.
-            query = {}
+            query = {"genres": {"$in": filters["genres"]}}
 
     return query, sort, project
 
