@@ -1,4 +1,5 @@
 $path = ".\venv"
+$file = ".\requirements.txt"
 
 If (!(test-path $path)) {
     py -m venv $path
@@ -6,4 +7,4 @@ If (!(test-path $path)) {
 
 .\venv\Scripts\activate
 
-pip install -r .\requirements.txt
+pip install -r $file
