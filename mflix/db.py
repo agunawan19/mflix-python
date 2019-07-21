@@ -222,18 +222,7 @@ def get_movie(id):
         movie = db.movies.aggregate(pipeline).next()
         return movie
 
-    # TODO: Error Handling
-    # If an invalid ID is passed to `get_movie`, it should return None.
-    except (StopIteration) as _:
-
-        """
-        Ticket: Error Handling
-
-        Handle the InvalidId exception from the BSON library the same way as the
-        StopIteration exception is handled. Both exceptions should result in
-        `get_movie` returning None.
-        """
-
+    except (InvalidId, StopIteration) as _:
         return None
 
     except Exception as e:
@@ -248,19 +237,6 @@ def get_all_genres():
         {"$unwind": "$genres"},
         {"$group": {"_id": None, "genres": {"$addToSet": "$genres"}}}
     ]))[0]["genres"]
-
-
-"""
-Ticket: Create/Update Comments
-
-For this ticket, you will need to implement the following two methods:
-
-- add_comment
-- update_comment
-
-You can find these methods below this docstring. Make sure to read the comments
-to better understand the task.
-"""
 
 
 def add_comment(movie_id, user, comment, date):
@@ -369,7 +345,6 @@ def delete_user(email):
     that user's session from the `sessions` collection.
     """
     try:
-        # TODO: User Management
         # Delete the corresponding documents from `users` and `sessions`.
         db.sessions.delete_one({ "user_id": email })
         db.users.delete_one({ "email": email })
